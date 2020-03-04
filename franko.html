@@ -1,0 +1,233 @@
+<!DOCTYPE HTML>
+<!--
+	Solid State by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title></title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<link rel="icon" href="img/icon.png">
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+
+		<!-- Page Wrapper -->
+			<div id="page-wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<h1><a href="index.html">Home</a></h1>
+		
+					</header>
+
+				<!-- Wrapper -->
+					<section id="wrapper">
+						<header>
+							<div class="inner">
+								<h2>Frankomatic for Rodent Analysis</h2>
+								<p>Internet of Things system that helps researchers gather data of the population of rodents and other similar animals in open green areas throughout BC. 
+							</p>
+							</div>
+						</header>
+
+						<!-- Content -->
+							<div class="wrapper">
+								<div class="inner">
+
+									<section>
+										<h3 class="major">Project Description</h3>
+										<p>
+											The name and idea for this project came from our client who is a biologist and does research on the animal population throughout BC, mainly rodents. The project tries to solve the inefficiency of the current method, which requires researchers to use live bait traps to capture specimens. 
+											The traps must be checked every few hours, and if there is a live specimen inside it, it's removed and kept for study prior to its final release. This is a time and labor intensive form of data gathering, and in addition to being very stressful to the specimens from which we want to collect data. With that problem in mind we came with an automated solution that uses IoT technologies to automate the process. 
+										</p>
+										<p>
+											The system consists of a harware unit stored within a 12-inch PVC pipe which contains an Arduino and Raspberry Pi along with different sensors and a camera to gather all the required data. It can gather both environmental data such as temperature, light intensity and humidity and data about the animals themselves such as weight and a set of pictures showing different angles, which would also show its length. Environmental data is gathered every 5 minutes. For gathering data of the animal, we set up a weight scale in the unit. A significant change in weight would trigger the system to start taking pictures and calculate the average weight sampled within a 5 second period. All the data is saved in a csv file for easy analysis. 
+
+										</p>
+										
+										<h3 class="major">Development Process</h3>
+										<p>
+											For this project our development team consisted of 3 people working in an agile environment. We communicated with the client on a regular basis to refine requirements and give updates on the progress. The main focus of the project was the configuration and integration of the circuits to set up all the different sensors with the Arduino and the Raspberry Pi. For the first half of the development process we focused on the design of the hardware structure and its configuration. Then, on the second part we focused on writing the software to handle communication between the 2 devices and to respond to events so we can collect and process the input data. 
+										</p>
+											
+									</section>
+
+									<section>
+										<div class="row">
+											<div class="col-6 col-12-medium">
+												<h4>Programming Languages and Technologies</h4>
+												<ul class="alt">
+													<li>Python</li>
+													<li>LUA (based on C++)</li>
+													<li>Github</li>
+													<li>Usb serial communication</li>
+													<li>Linux (Raspbian)</li>
+												</ul>
+											</div>
+											<div class="col-6 col-12-medium">
+												<h4>Hardware</h4>
+												<ul class="alt">
+													<li>Raspberry Pi 3</li>
+													<li>NodeMCU (Arduino environment)</li>
+													<li>sensors: temperature, humdity, light intensity</li>
+													<li>HX711 Load Cell/ Weight Sensor</li>
+													<li>Sony Camera Module for Raspberry Pi</li>
+												</ul>
+											</div>
+										</div>
+									</section>
+
+									<section>
+										<h3 class="major">Images</h3>
+										<h4>General Hardware Implementation</h4>
+										<div class="box alt">
+											<div class="row gtr-uniform">
+												<div class="col-12">
+													<span class="image fit">
+														<img src="img/hardware.png" alt="schematic" />
+													</span></div>
+												<div class="col-4">
+													<span class="image fit" style="text-align: center">
+														<img src="img/franko.jpg" alt="sensors"/>
+														Raspberry Pi, Arduino and Sensors
+													</span>
+												</div>
+												<div class="col-4">
+													<span class="image fit" style="text-align: center">
+														<img src="img/housing.png" alt="housing" />
+														Housing
+													</span>
+												</div>
+												<div class="col-4">
+													<span class="image fit" style="text-align: center">
+														<img src="img/fullpic.jpg" alt="full pic" />
+														Full System
+													</span>
+												</div>
+											</div>
+										</div>
+										<h3 class="major">Images</h3>
+										<h4>Small Extract
+											<a href="https://github.com/diegojramirezs7/iot/blob/master/src/pyscripts/classy.py" target="_blank">(Click here for full code)</a>
+										</h4>
+										<pre>
+											<code>
+def run(self):
+	"""
+	constantly running on the background and getting weight from Arduino.
+	If weight received is more than 5 grams, it checks if the last recorded 
+	time was more than 5 minutes ago. Then calls all helper methods
+	"""
+	while True:
+		#get weight from arduino serial com
+		try:
+			weight = self.read_arduino(weight = True)
+			weight = float(weight)
+			if weight is None:
+				weight = 0.0
+				print("weight is None")
+		except:
+			weight = 0.0
+			print("weight is none")
+
+		if weight > self.weightThreshold:
+			#update current time every time weight scale is more than 5 grams
+			lastTimeWeightDetected = datetime.now()
+			diff = lastTimeWeightDetected - self.lastTimeWeightSaved
+			#more than 5 minutes from last measurement
+			if diff.seconds >= self.minimumSecsBetween:
+				#for each animal a folder is created, folder name is the time.
+				#in folder there will be 5 pictures and weight.csv file
+				directory = "/home/pi/Documents/logs/"+str(lastTimeWeightDetected)
+				os.mkdir(directory)
+				self.take_pictures(directory, n = 5)
+				self.save_weight(directory)
+				self.lastTimeWeightSaved = datetime.now()
+
+		self.envTime = datetime.now()
+		envDiff = self.envTime - self.lastEnvTime
+			
+		if envDiff.seconds >= self.timeThreshold:
+			lightpath = "/home/pi/Documents/logs/light_data.csv"
+			thPath = "/home/pi/Documents/logs/temp_humidity.csv"
+			self.save_lightlevel(lightpath, str(self.envTime))
+			self.save_th(thPath, str(self.envTime))
+			self.lastEnvTime = datetime.now()
+			self.count += 1
+
+											</code>
+										</pre>
+			
+									</section>
+
+								</div>
+							</div>
+
+					</section>
+					<!-- Footer -->
+					<section id="footer">
+						<div class="inner">
+							<h2 class="major">Get in touch</h2>
+							<p>If you have any questions or have any inquiries, don't hesitate to get in touch with me. </p>
+							<!--<form method="post" action="#">
+								<div class="fields">
+									<div class="field">
+										<label for="name">Name</label>
+										<input type="text" name="name" id="name" />
+									</div>
+									<div class="field">
+										<label for="email">Email</label>
+										<input type="email" name="email" id="email" />
+									</div>
+									<div class="field">
+										<label for="message">Message</label>
+										<textarea name="message" id="message" rows="4"></textarea>
+									</div>
+								</div>
+								<ul class="actions">
+									<li>
+										<input type="submit" value="Send Message"/>
+									</li>
+								</ul>
+							</form> -->
+							<ul class="contact">
+								<li class="icon solid"></li>
+								<li class="icon solid"></li>
+								<li class="icon solid"></li>
+								<li class="icon solid fa-phone">+1 (250) 879-1073</li>
+								<li class="icon solid fa-envelope">
+									<a href="mailto:diegojramirezs7@gmail.com?Subject=Hello">diegojramirezs7@gmail.com</a>
+								</li>
+								<li class="icon brands fa-linkedin" >
+									<a href="https://www.linkedin.com/in/diegojramirez/" target="_blank">
+										LinkedIn Page
+									</a>
+								</li>
+								<li class="icon brands fa-github" >
+									<a href="https://github.com/diegojramirezs7/" target="_blank">
+										Github Page
+									</a>
+								</li>
+							</ul>
+							<ul class="copyright">
+							</ul>
+						</div>
+					</section>
+
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>

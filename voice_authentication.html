@@ -1,0 +1,238 @@
+<!DOCTYPE HTML>
+<!--
+	Solid State by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title></title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<link rel="icon" href="img/icon.png">
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+		
+	</head>
+	<body class="is-preload">
+
+		<!-- Page Wrapper -->
+			<div id="page-wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<h1><a href="index.html">Home</a></h1>
+						<nav>
+							<a href="#menu">Menu</a>
+						</nav>
+					</header>
+
+	
+
+				<!-- Wrapper -->
+					<section id="wrapper">
+						<header>
+							<div class="inner" id="root">
+								<h2>Voice Recognition and Authentication</h2>
+								<p>Biometric authentication system that uses different APIs for converting speech to text and for identifying and authenticating users out of a previously enrolled set, based on their voice.
+								</p>
+							</div>
+						</header>
+
+						<!-- Content -->
+							<div class="wrapper">
+								<div class="inner">
+									<section>
+										<h3 class="major">Project Description</h3>
+										<p>
+											This is a voice identification and authentication system intented to replace traditional username and password authentication. The goal is to place it on access points to whole buildings, individual rooms or digital spaces. So, they would also eliminate the need for physical keys. The system consists of 2 main user interfaces: a completely hands-free interface through a Raspberry Pi microphone and a traditional website for administration purposes. We included an HTTP server to act as middleware between the different components. The server handles queries to a MySQL DB,  manages communication with the REST APIs and presents the appropriate data to the UI. 
+										</p>
+										<p>
+											 
+											Basically, the user can give voice commands to the system such as "enroll", "authenticate" or "identify" and it will start the corresponding process. This process of transforming speech to text is implemented with Google's voice API.
+											For enrollment the user provides 3 different voice samples so that the system can create a more robust analysis on the voice characteristics. For authentication, the system will record voice samples from the user and send them to the server for voice analysis. Said analysis is done by 2 different APIs, VoiceIt and Azure. 
+											The server will then return a response with an associated confidence level and its guess of to which speaker the sample belongs. 
+										</p>
+										
+										<h3 class="major">Development Process</h3>
+										<p>
+											Our development consisted of 3 people working in an agile environment. We held weekly meetings with our clients to report progress, clarify requirements and discuss current problems. We followed an incremental development and delivery process. The process was broken down into several key stages. During each stage we focus on development of a separate component. As the server is the key component which integrates everything else, its development was parallel to the development of the other ones. After each increment we needed both the server and the other components to test the implementations. 
+										</p>
+										
+									</section>
+
+									<section>
+										<div class="row">
+											<div class="col-6 col-12-medium">
+												<h4>Programming Languages and Tools</h4>
+												<ul class="alt">
+													<li>Python (Flask)</li>
+													<li>Javascript (Jquery)</li>
+													<li>HTML/CSS</li>
+													<li>SQL (MySQL) </li>		
+													<li>FileZilla</li>
+													<li>Github</li>
+												</ul>
+											</div>
+											<div class="col-6 col-12-medium">
+												<h4>Technologies Used</h4>
+												<ul class="alt">
+													<li>VoiceIt (voice identification and verification)</li>
+													<li>Azure Cognitive Services (voice identification and verification)</li>
+													<li>Google Voice (speech to text)</li>
+													<li>Recorder.JS (audio recording in browser)</li>
+													<li>Apache</li>
+													<li>Raspberry Pi</li>
+												</ul>
+											</div>
+										</div>
+									</section>
+
+									<section>
+										<h3 class="major">Images</h3>
+										<h4>General System Structure</h4>
+										<div class="box alt">
+											<div class="row gtr-uniform">
+												<div class="col-12">
+													<span class="image fit">
+														<img src="img/voice_architecture2.png" alt="schematic" />
+													</span></div>
+												<!--<div class="col-4">
+													<span class="image fit" style="text-align: center">
+														<img src="img/franko.jpg" alt="sensors"/>
+														Raspberry Pi and Arduino and Sensors
+													</span>
+												</div>
+												<div class="col-4">
+													<span class="image fit" style="text-align: center">
+														<img src="img/housing.png" alt="housing" />
+														Housing
+													</span>
+												</div>
+												<div class="col-4">
+													<span class="image fit" style="text-align: center">
+														<img src="img/fullpic.jpg" alt="full pic" />
+														Full System
+													</span>
+												</div> -->
+											</div>
+										</div>
+										<h3 class="major">Sample Code</h3>
+										<h4>Small Extract</h4>
+										<p>Given that this code will be used for user authentication and it belongs to a larger security system, the entire code cannot be shared. </p>
+										<pre>
+											<code>
+# inside API Handler class
+class AzureHandler:
+	def __init__(self, endpoint, subkey):
+		self.endpoint = endpoint
+		self.subkey = subkey
+
+	# params: url path after domain, HTTP method, request body and HTTP headers
+	def send_request(self, path, method="GET", b="", h=None):
+		if h:
+			headers = h
+		else:
+			headers = {
+				'Ocp-Apim-Subscription-Key': self.subkey,
+			}
+
+		try:
+			conn = http.client.HTTPSConnection(self.endpoint)
+			conn.request(method, path, b, headers)
+			response = conn.getresponse()
+			data = response.read()
+			conn.close()
+			return response, data
+		except Exception as e:
+			return e
+
+	def create_identification_profile(self):
+		header_arg = {
+			'Content-Type': 'application/json',
+			'Ocp-Apim-Subscription-Key': self.subkey,
+		}
+		path_arg = "/spid/v1.0/identificationProfiles"
+		method_arg = "POST"
+		body = '{"locale":"en-us",}'
+
+		response, data = self.send_request(path=path_arg, method=method_arg, b=body, h = header_arg)
+		return data
+
+
+
+											</code>
+										</pre>
+			
+									</section>
+									<h3>A little backstory</h3>
+									<p>
+										This system was part of a project course that every CS student has to take in their last semester. I choose this particular project because it seemed the most challenging and the one that required us to learn the most. Additionally, it requires a vast range of technologies to be integrated and it simply would provide us with the most exposure to new knowledge. 
+									</p>
+
+								</div>
+							</div>
+
+					</section>
+					<!-- Footer -->
+					<section id="footer">
+						<div class="inner">
+							<h2 class="major">Get in touch</h2>
+							<p>If you have any questions or have any inquiries, don't hesitate to get in touch with me. </p>
+							<!--<form method="post" action="http://localhost:5000/test">
+								<div class="fields">
+									<div class="field">
+										<label for="name">Name</label>
+										<input type="text" name="name" id="name" />
+									</div>
+									<div class="field">
+										<label for="email">Email</label>
+										<input type="email" name="email" id="email" />
+									</div>
+									<div class="field">
+										<label for="message">Message</label>
+										<textarea name="message" id="message" rows="4"></textarea>
+									</div>
+								</div>
+								<ul class="actions">
+									<li>
+										<input type="submit" value="Send Message"/>
+									</li>
+								</ul>
+							</form> -->
+							<ul class="contact">
+								<li class="icon solid"></li>
+								<li class="icon solid"></li>
+								<li class="icon solid"></li>
+								<li class="icon solid fa-phone">+1 (250) 879-1073</li>
+								<li class="icon solid fa-envelope">
+									<a href="mailto:diegojramirezs7@gmail.com?Subject=Hello">diegojramirezs7@gmail.com</a>
+								</li>
+								<li class="icon brands fa-linkedin" >
+									<a href="https://www.linkedin.com/in/diegojramirez/" target="_blank">
+										LinkedIn Page
+									</a>
+								</li>
+								<li class="icon brands fa-github" >
+									<a href="https://github.com/diegojramirezs7/" target="_blank">
+										Github Page
+									</a>
+								</li>
+							</ul>
+							<ul class="copyright">
+							</ul>
+						</div>
+					</section>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+			<script src="assets/js/send_email.js"></script>
+	</body>
+</html>
